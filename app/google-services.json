@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "141596114608",
+    "project_id": "ldlattendencebarcode",
+    "storage_bucket": "ldlattendencebarcode.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:141596114608:android:932caf8252a79bb581c575",
+        "android_client_info": {
+          "package_name": "com.usualdev.lightdeliteracy"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDhWncNhijqBtcMm_pP5ZPpG_xGuiif0hY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
