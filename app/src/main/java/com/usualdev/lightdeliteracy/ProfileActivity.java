@@ -19,7 +19,7 @@ import com.google.firebase.database.ValueEventListener;
 
 public class ProfileActivity extends AppCompatActivity {
 
-    TextView profileName, profileEmail, profileUsername, profileday, profilephone;
+    TextView profileName, profileEmail, profileUsername, profileday, profilephone, profileadmissionno;
     TextView titleName, titleUsername;
     Button editProfile;
 
@@ -33,6 +33,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileUsername = findViewById(R.id.profileUsername);
         profileday = findViewById(R.id.profileDay);
         profilephone = findViewById(R.id.profilephone);
+        profileadmissionno = findViewById(R.id.profileadmno);
         titleName = findViewById(R.id.titleName);
         titleUsername = findViewById(R.id.titleUsername);
         editProfile = findViewById(R.id.editButton);
@@ -55,6 +56,7 @@ public class ProfileActivity extends AppCompatActivity {
         String usernameUser = intent.getStringExtra("username");
         String dayUser = intent.getStringExtra("day");
         String phoneUser = intent.getStringExtra("phone");
+        String admnoUser = intent.getStringExtra("admno");
 
         titleName.setText(nameUser);
         titleUsername.setText(usernameUser);
@@ -63,6 +65,7 @@ public class ProfileActivity extends AppCompatActivity {
         profileUsername.setText(usernameUser);
         profileday.setText(dayUser);
         profilephone.setText(phoneUser);
+        profileadmissionno.setText(admnoUser);
     }
 
     public void passUserData(){
@@ -82,7 +85,7 @@ public class ProfileActivity extends AppCompatActivity {
                     String usernameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
                     String dayFromDB = snapshot.child(userUsername).child("day").getValue(String.class);
                     String phoneFromDB = snapshot.child(userUsername).child("phone").getValue(String.class);
-
+                    String admnoFromDB = snapshot.child(userUsername).child("admno").getValue(String.class);
                     Intent intent = new Intent(ProfileActivity.this, EditProfileActivity.class);
 
                     intent.putExtra("name", nameFromDB);
@@ -90,6 +93,7 @@ public class ProfileActivity extends AppCompatActivity {
                     intent.putExtra("username", usernameFromDB);
                     intent.putExtra("day", dayFromDB);
                     intent.putExtra("phone", phoneFromDB);
+                    intent.putExtra("admno", admnoFromDB);
 
                     startActivity(intent);
 
