@@ -57,6 +57,7 @@ public class ProfileActivity extends AppCompatActivity {
         String dayUser = intent.getStringExtra("day");
         String phoneUser = intent.getStringExtra("phone");
         String admnoUser = intent.getStringExtra("admno");
+        String role = intent.getStringExtra("role");
 
         titleName.setText(nameUser);
         titleUsername.setText(usernameUser);

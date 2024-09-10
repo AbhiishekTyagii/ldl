@@ -103,6 +103,7 @@ public class LoginActivity extends AppCompatActivity {
                         String dayFromDB = snapshot.child(userUsername).child("day").getValue(String.class);
                         String phoneFromDB = snapshot.child(userUsername).child("phone").getValue(String.class);
                         String admnoFromDB = snapshot.child(userUsername).child("admno").getValue(String.class);
+                        String roleFromDB = snapshot.child(userUsername).child("role").getValue(String.class);
 
                         Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
 
@@ -113,6 +114,7 @@ public class LoginActivity extends AppCompatActivity {
                         intent.putExtra("phone", phoneFromDB);
                         intent.putExtra("day", dayFromDB);
                         intent.putExtra("admno", admnoFromDB);
+                        intent.putExtra("role", roleFromDB);
 
                         Toast.makeText(LoginActivity.this, "You have Signin successfully!", Toast.LENGTH_SHORT).show();
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);                        startActivity(intent);
