@@ -1,7 +1,7 @@
 package com.usualdev.lightdeliteracy;
 
 public class Helper {
-    String name, email, username, password, day , phone, admno;
+    String name, email, username, password, day , phone, admno ,role;
 
 
     public String getName() {
@@ -60,14 +60,22 @@ public class Helper {
         this.admno = admno;
     }
 
+    public String getRole() {
+        return role;
+    }
 
-    public Helper(String name, String email, String username, String password, String day, String phone, String admno) {
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public Helper(String name, String email, String username, String password, String day, String phone, String admno,String role) {
         this.name = name;
         this.email = email;
         this.username = username;
         this.password = password;
         this.day = day;
         this.phone = phone;
+        this.role = role;
         this.admno = admno;
     }
 

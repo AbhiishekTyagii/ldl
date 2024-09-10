@@ -215,7 +215,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/profilephone"
+                android:id="@+id/profilephoneLbl"
                 android:layout_weight="1"
                 android:text="Mobile    Number"
                 android:textStyle="bold"
@@ -225,8 +225,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/admno"
-                android:text="phone"
+                android:id="@+id/profilePhone"
+                android:text="9898989898"
                 android:layout_weight="1"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/lavender"
@@ -252,7 +252,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/profileadmno"
+                android:id="@+id/admno"
                 android:layout_weight="1"
                 android:text="Admission Number"
                 android:textStyle="bold"
@@ -262,8 +262,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/ad"
-                android:text="admno"
+                android:id="@+id/profileAdmNo"
+                android:text="RRDF3232G"
                 android:layout_weight="1"
                 android:textAlignment="viewEnd"
                 android:textColor="@color/lavender"

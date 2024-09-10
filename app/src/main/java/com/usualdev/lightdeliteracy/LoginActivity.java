@@ -115,7 +115,7 @@ public class LoginActivity extends AppCompatActivity {
                         intent.putExtra("admno", admnoFromDB);
 
                         Toast.makeText(LoginActivity.this, "You have Signin successfully!", Toast.LENGTH_SHORT).show();
-                        startActivity(intent);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);                        startActivity(intent);
                     } else {
                         loginPassword.setError("Invalid Credentials");
                         loginPassword.requestFocus();

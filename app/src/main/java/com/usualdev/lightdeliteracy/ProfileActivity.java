@@ -32,8 +32,8 @@ public class ProfileActivity extends AppCompatActivity {
         profileEmail = findViewById(R.id.profileEmail);
         profileUsername = findViewById(R.id.profileUsername);
         profileday = findViewById(R.id.profileDay);
-        profilephone = findViewById(R.id.profilephone);
-        profileadmissionno = findViewById(R.id.profileadmno);
+        profilephone = findViewById(R.id.profilePhone);
+        profileadmissionno = findViewById(R.id.profileAdmNo);
         titleName = findViewById(R.id.titleName);
         titleUsername = findViewById(R.id.titleUsername);
         editProfile = findViewById(R.id.editButton);

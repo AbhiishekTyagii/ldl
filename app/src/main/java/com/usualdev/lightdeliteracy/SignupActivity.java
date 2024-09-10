@@ -49,7 +49,7 @@ public class SignupActivity extends AppCompatActivity {
                 String day = signupday.getText().toString();
                 String phone = signupphone.getText().toString();
                 String admno = signupadmissionno.getText().toString();
-                Helper helperClass = new Helper(name, email, username, password, day, phone, admno);
+                Helper helperClass = new Helper(name, email, username, password, day, phone, admno ,"user");
                     reference.child(username).setValue(helperClass);
                 Toast.makeText(SignupActivity.this, "You have signup successfully!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(SignupActivity.this, LoginActivity.class);
