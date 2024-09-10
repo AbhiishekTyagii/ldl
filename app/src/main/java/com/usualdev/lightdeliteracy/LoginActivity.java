@@ -100,6 +100,9 @@ public class LoginActivity extends AppCompatActivity {
                         String nameFromDB = snapshot.child(userUsername).child("name").getValue(String.class);
                         String emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
                         String usernameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
+                        String dayFromDB = snapshot.child(userUsername).child("day").getValue(String.class);
+                        String phoneFromDB = snapshot.child(userUsername).child("phone").getValue(String.class);
+                        String admnoFromDB = snapshot.child(userUsername).child("admno").getValue(String.class);
 
                         Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
 
@@ -107,6 +110,10 @@ public class LoginActivity extends AppCompatActivity {
                         intent.putExtra("email", emailFromDB);
                         intent.putExtra("username", usernameFromDB);
                         intent.putExtra("password", passwordFromDB);
+                        intent.putExtra("phone", phoneFromDB);
+                        intent.putExtra("day", dayFromDB);
+                        intent.putExtra("admno", admnoFromDB);
+
                         Toast.makeText(LoginActivity.this, "You have Signin successfully!", Toast.LENGTH_SHORT).show();
                         startActivity(intent);
                     } else {

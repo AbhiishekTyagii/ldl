@@ -217,7 +217,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/profilephone"
                 android:layout_weight="1"
-                android:text="Mobile Number"
+                android:text="Mobile    Number"
                 android:textStyle="bold"
                 android:textColor="@color/lavender"
                 android:textSize="18sp"/>
