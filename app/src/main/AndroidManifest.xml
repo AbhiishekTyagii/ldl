@@ -12,7 +12,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.LightDeLiteracy"
         tools:targetApi="31">
-
+        <activity
+            android:name=".DayCoordinators"
+            android:exported="false" />
+        <activity
+            android:name=".Admin"
+            android:exported="false" />
         <activity
             android:name=".EditProfileActivity"
             android:exported="false" />
@@ -27,9 +32,7 @@
             android:exported="false" />
         <activity
             android:name=".LoginActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false" />
         <activity
             android:name=".Splash"
             android:exported="true">
@@ -39,7 +42,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
     </application>
 
 </manifest>
