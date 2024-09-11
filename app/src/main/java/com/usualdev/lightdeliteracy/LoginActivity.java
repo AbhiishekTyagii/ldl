@@ -18,12 +18,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -34,7 +28,6 @@ public class LoginActivity extends AppCompatActivity {
     private TextView signupRedirectText;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference userDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +35,6 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
         mAuth = FirebaseAuth.getInstance();
-        userDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
 
         loginUsername = findViewById(R.id.login_username);
         loginPassword = findViewById(R.id.login_password);
@@ -53,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (validateUsername() && validatePassword()) {
-                    checkUser();
+                    authenticateUser();
                 }
             }
         });
@@ -68,7 +60,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean validateUsername() {
-        String val = loginUsername.getText().toString();
+        String val = loginUsername.getText().toString().trim();
         if (val.isEmpty()) {
             loginUsername.setError("Username cannot be empty");
             return false;
@@ -79,7 +71,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private boolean validatePassword() {
-        String val = loginPassword.getText().toString();
+        String val = loginPassword.getText().toString().trim();
         if (val.isEmpty()) {
             loginPassword.setError("Password cannot be empty");
             return false;
@@ -89,57 +81,25 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void checkUser() {
-        String username = loginUsername.getText().toString().trim();
+    private void authenticateUser() {
+        // Assuming the email format is username@yourdomain.com
+        String email = loginUsername.getText().toString().trim() + "@yourdomain.com";
         String password = loginPassword.getText().toString().trim();
 
-        Query query = userDatabaseReference.orderByChild("username").equalTo(username);
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    DataSnapshot userSnapshot = dataSnapshot.getChildren().iterator().next();
-                    String email = userSnapshot.child("email").getValue(String.class);
-                    String dbPassword = userSnapshot.child("password").getValue(String.class);
-                    String role = userSnapshot.child("role").getValue(String.class);
-
-                    Log.d(TAG, "Email: " + email);
-                    Log.d(TAG, "DB Password: " + dbPassword);
-                    Log.d(TAG, "Entered Password: " + password);
-
-                    if (dbPassword != null && dbPassword.equals(password)) {
-                        signInWithEmail(email, password);
-                    } else {
-                        loginPassword.setError("Invalid Credentials");
-                        loginPassword.requestFocus();
-                    }
-                } else {
-                    loginUsername.setError("User does not exist");
-                    loginUsername.requestFocus();
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Database error: " + databaseError.getMessage());
-            }
-        });
-    }
-
-    private void signInWithEmail(String email, String password) {
         mAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
+                            // Sign-in success
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
                                 saveUserData(user);
                             }
                         } else {
+                            // Sign-in failed
                             Log.e(TAG, "Authentication failed: " + task.getException().getMessage());
-                            loginPassword.setError("Authentication Failed");
+                            loginPassword.setError("Authentication Failed: " + task.getException().getMessage());
                             loginPassword.requestFocus();
                         }
                     }
@@ -149,28 +109,16 @@ public class LoginActivity extends AppCompatActivity {
     private void saveUserData(FirebaseUser user) {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        String username = loginUsername.getText().toString();
 
-        userDatabaseReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    DataSnapshot userSnapshot = dataSnapshot.getChildren().iterator().next();
-                    String role = userSnapshot.child("role").getValue(String.class);
-                    editor.putString("role", role);
-                    editor.apply();
+        // Use user email to determine role or other user data
+        String email = user.getEmail();
 
-                    redirectToAppropriateActivity();
-                } else {
-                    Toast.makeText(LoginActivity.this, "Role not found", Toast.LENGTH_SHORT).show();
-                }
-            }
+        // Extract role or other information from user profile or database if needed
+        // For simplicity, we'll assume default role is "user"
+        editor.putString("role", "user");
+        editor.apply();
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Log.e(TAG, "Database error: " + databaseError.getMessage());
-            }
-        });
+        redirectToAppropriateActivity();
     }
 
     private void redirectToAppropriateActivity() {

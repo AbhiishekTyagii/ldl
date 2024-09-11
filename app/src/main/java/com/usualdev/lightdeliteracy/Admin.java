@@ -17,7 +17,7 @@ public class Admin extends AppCompatActivity {
         setContentView(R.layout.activity_admin);
 
         mAuth = FirebaseAuth.getInstance();
-        welcomeMessage = findViewById(R.id.adminTextView);
+        welcomeMessage = findViewById(R.id.welcome_message);
 
         // Get the current user and display a welcome message
         FirebaseUser user = mAuth.getCurrentUser();
