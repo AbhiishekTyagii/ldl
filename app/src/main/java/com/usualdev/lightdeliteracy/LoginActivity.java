@@ -104,6 +104,10 @@ public class LoginActivity extends AppCompatActivity {
                     String dbPassword = userSnapshot.child("password").getValue(String.class);
                     String role = userSnapshot.child("role").getValue(String.class);
 
+                    Log.d(TAG, "Email: " + email);
+                    Log.d(TAG, "DB Password: " + dbPassword);
+                    Log.d(TAG, "Entered Password: " + password);
+
                     if (dbPassword != null && dbPassword.equals(password)) {
                         signInWithEmail(email, password);
                     } else {
