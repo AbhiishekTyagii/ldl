@@ -1,16 +1,23 @@
 package com.usualdev.lightdeliteracy;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,14 +27,22 @@ import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
-    EditText loginUsername, loginPassword;
-    Button loginButton;
-    TextView signupRedirectText;
+    private static final String TAG = "LoginActivity";
+
+    private EditText loginUsername, loginPassword;
+    private Button loginButton;
+    private TextView signupRedirectText;
+
+    private FirebaseAuth mAuth;
+    private DatabaseReference userDatabaseReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mAuth = FirebaseAuth.getInstance();
+        userDatabaseReference = FirebaseDatabase.getInstance().getReference("users");
 
         loginUsername = findViewById(R.id.login_username);
         loginPassword = findViewById(R.id.login_password);
@@ -37,9 +52,7 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!validateUsername() | !validatePassword()) {
-
-                } else {
+                if (validateUsername() && validatePassword()) {
                     checkUser();
                 }
             }
@@ -52,10 +65,9 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
     }
 
-    public Boolean validateUsername() {
+    private boolean validateUsername() {
         String val = loginUsername.getText().toString();
         if (val.isEmpty()) {
             loginUsername.setError("Username cannot be empty");
@@ -66,7 +78,7 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    public Boolean validatePassword(){
+    private boolean validatePassword() {
         String val = loginPassword.getText().toString();
         if (val.isEmpty()) {
             loginPassword.setError("Password cannot be empty");
@@ -77,47 +89,23 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
+    private void checkUser() {
+        String username = loginUsername.getText().toString().trim();
+        String password = loginPassword.getText().toString().trim();
 
-    public void checkUser(){
-        String userUsername = loginUsername.getText().toString().trim();
-        String userPassword = loginPassword.getText().toString().trim();
+        Query query = userDatabaseReference.orderByChild("username").equalTo(username);
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("users");
-        Query checkUserDatabase = reference.orderByChild("username").equalTo(userUsername);
-
-        checkUserDatabase.addListenerForSingleValueEvent(new ValueEventListener() {
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    DataSnapshot userSnapshot = dataSnapshot.getChildren().iterator().next();
+                    String email = userSnapshot.child("email").getValue(String.class);
+                    String dbPassword = userSnapshot.child("password").getValue(String.class);
+                    String role = userSnapshot.child("role").getValue(String.class);
 
-                if (snapshot.exists()){
-
-                    loginUsername.setError(null);
-                    String passwordFromDB = snapshot.child(userUsername).child("password").getValue(String.class);
-
-                    if (passwordFromDB.equals(userPassword)) {
-                        loginUsername.setError(null);
-
-                        String nameFromDB = snapshot.child(userUsername).child("name").getValue(String.class);
-                        String emailFromDB = snapshot.child(userUsername).child("email").getValue(String.class);
-                        String usernameFromDB = snapshot.child(userUsername).child("username").getValue(String.class);
-                        String dayFromDB = snapshot.child(userUsername).child("day").getValue(String.class);
-                        String phoneFromDB = snapshot.child(userUsername).child("phone").getValue(String.class);
-                        String admnoFromDB = snapshot.child(userUsername).child("admno").getValue(String.class);
-                        String roleFromDB = snapshot.child(userUsername).child("role").getValue(String.class);
-
-                        Intent intent = new Intent(LoginActivity.this, ProfileActivity.class);
-
-                        intent.putExtra("name", nameFromDB);
-                        intent.putExtra("email", emailFromDB);
-                        intent.putExtra("username", usernameFromDB);
-                        intent.putExtra("password", passwordFromDB);
-                        intent.putExtra("phone", phoneFromDB);
-                        intent.putExtra("day", dayFromDB);
-                        intent.putExtra("admno", admnoFromDB);
-                        intent.putExtra("role", roleFromDB);
-
-                        Toast.makeText(LoginActivity.this, "You have Signin successfully!", Toast.LENGTH_SHORT).show();
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);                        startActivity(intent);
+                    if (dbPassword != null && dbPassword.equals(password)) {
+                        signInWithEmail(email, password);
                     } else {
                         loginPassword.setError("Invalid Credentials");
                         loginPassword.requestFocus();
@@ -129,9 +117,76 @@ public class LoginActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
             }
         });
+    }
+
+    private void signInWithEmail(String email, String password) {
+        mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(@NonNull Task<AuthResult> task) {
+                        if (task.isSuccessful()) {
+                            FirebaseUser user = mAuth.getCurrentUser();
+                            if (user != null) {
+                                saveUserData(user);
+                            }
+                        } else {
+                            Log.e(TAG, "Authentication failed: " + task.getException().getMessage());
+                            loginPassword.setError("Authentication Failed");
+                            loginPassword.requestFocus();
+                        }
+                    }
+                });
+    }
+
+    private void saveUserData(FirebaseUser user) {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String username = loginUsername.getText().toString();
+
+        userDatabaseReference.orderByChild("username").equalTo(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    DataSnapshot userSnapshot = dataSnapshot.getChildren().iterator().next();
+                    String role = userSnapshot.child("role").getValue(String.class);
+                    editor.putString("role", role);
+                    editor.apply();
+
+                    redirectToAppropriateActivity();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Role not found", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Database error: " + databaseError.getMessage());
+            }
+        });
+    }
+
+    private void redirectToAppropriateActivity() {
+        SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String role = sharedPreferences.getString("role", "user"); // Default to "user" if role is not found
+
+        Intent intent;
+        switch (role) {
+            case "admin":
+                intent = new Intent(LoginActivity.this, Admin.class);
+                break;
+            case "daycoordinator":
+                intent = new Intent(LoginActivity.this, DayCoordinators.class);
+                break;
+            default:
+                intent = new Intent(LoginActivity.this, MainActivity.class);
+                break;
+        }
+
+        startActivity(intent);
+        finish(); // Close the login activity
     }
 }
