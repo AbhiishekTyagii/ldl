@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@drawable/background2"
+    android:background="@drawable/mainbg"
     tools:context=".SignupActivity">
 
     <androidx.cardview.widget.CardView
@@ -104,7 +104,7 @@
                 android:layout_marginTop="20dp"
                 android:padding="8dp"
                 android:hint="Mobile Number"
-                android:inputType="text"
+                android:inputType="number"
                 android:drawableLeft="@drawable/baseline_local_phone_24"
                 android:drawablePadding="8dp"
                 android:textColor="@color/black"/>
