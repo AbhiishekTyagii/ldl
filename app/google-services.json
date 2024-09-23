@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "141596114608",
+    "firebase_url": "https://ldlattendencebarcode-default-rtdb.firebaseio.com",
     "project_id": "ldlattendencebarcode",
     "storage_bucket": "ldlattendencebarcode.appspot.com"
   },

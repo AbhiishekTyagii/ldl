@@ -13,11 +13,11 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -27,14 +27,14 @@ public class LoginActivity extends AppCompatActivity {
     private Button loginButton;
     private TextView signupRedirectText;
 
-    private FirebaseAuth mAuth;
+    private DatabaseReference db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mAuth = FirebaseAuth.getInstance();
+        db = FirebaseDatabase.getInstance().getReference();
 
         loginUsername = findViewById(R.id.login_username);
         loginPassword = findViewById(R.id.login_password);
@@ -45,7 +45,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (validateUsername() && validatePassword()) {
-                    authenticateUser();
+                    authenticateUserWithUsernameAndPassword();
                 }
             }
         });
@@ -64,10 +64,9 @@ public class LoginActivity extends AppCompatActivity {
         if (val.isEmpty()) {
             loginUsername.setError("Username cannot be empty");
             return false;
-        } else {
-            loginUsername.setError(null);
-            return true;
         }
+        loginUsername.setError(null);
+        return true;
     }
 
     private boolean validatePassword() {
@@ -75,55 +74,80 @@ public class LoginActivity extends AppCompatActivity {
         if (val.isEmpty()) {
             loginPassword.setError("Password cannot be empty");
             return false;
-        } else {
-            loginPassword.setError(null);
-            return true;
         }
+        loginPassword.setError(null);
+        return true;
     }
 
-    private void authenticateUser() {
-        // Assuming the email format is username@yourdomain.com
-        String email = loginUsername.getText().toString().trim() + "@yourdomain.com";
-        String password = loginPassword.getText().toString().trim();
+    private void authenticateUserWithUsernameAndPassword() {
+        String inputUsername = loginUsername.getText().toString().trim();
+        String inputPassword = loginPassword.getText().toString().trim();
 
-        mAuth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign-in success
-                            FirebaseUser user = mAuth.getCurrentUser();
-                            if (user != null) {
-                                saveUserData(user);
-                            }
+        // Query the database for the user
+        db.child("users").orderByChild("username").equalTo(inputUsername).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        String storedPassword = snapshot.child("password").getValue(String.class);
+
+                        // Log values for debugging
+                        Log.d(TAG, "Input Password: " + inputPassword);
+                        Log.d(TAG, "Stored Password: " + storedPassword);
+
+                        if (storedPassword != null && storedPassword.equals(inputPassword)) {
+                            String username = snapshot.child("username").getValue(String.class);
+                            saveUserData(username);
                         } else {
-                            // Sign-in failed
-                            Log.e(TAG, "Authentication failed: " + task.getException().getMessage());
-                            loginPassword.setError("Authentication Failed: " + task.getException().getMessage());
-                            loginPassword.requestFocus();
+                            showError("Incorrect password");
                         }
                     }
-                });
+                } else {
+                    showError("Username does not exist");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Error fetching user data: ", databaseError.toException());
+                Toast.makeText(LoginActivity.this, "Error fetching user data", Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
-    private void saveUserData(FirebaseUser user) {
+    private void showError(String message) {
+        Toast.makeText(LoginActivity.this, message, Toast.LENGTH_LONG).show();
+        loginPassword.setError(message);
+        loginPassword.requestFocus();
+    }
+
+    private void saveUserData(String username) {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("username", username);
 
-        // Use user email to determine role or other user data
-        String email = user.getEmail();
+        // Fetch the user role
+        db.child("users").child(username).addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if (snapshot.exists()) {
+                    String role = snapshot.child("role").getValue(String.class);
+                    editor.putString("role", role != null ? role : "user");
+                    editor.apply();
+                    redirectToAppropriateActivity();
+                }
+            }
 
-        // Extract role or other information from user profile or database if needed
-        // For simplicity, we'll assume default role is "user"
-        editor.putString("role", "user");
-        editor.apply();
-
-        redirectToAppropriateActivity();
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.e(TAG, "Error fetching role: " + error.getMessage());
+            }
+        });
     }
 
     private void redirectToAppropriateActivity() {
         SharedPreferences sharedPreferences = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String role = sharedPreferences.getString("role", "user"); // Default to "user" if role is not found
+        String role = sharedPreferences.getString("role", "user");
 
         Intent intent;
         switch (role) {
@@ -139,6 +163,6 @@ public class LoginActivity extends AppCompatActivity {
         }
 
         startActivity(intent);
-        finish(); // Close the login activity
+        finish();
     }
 }

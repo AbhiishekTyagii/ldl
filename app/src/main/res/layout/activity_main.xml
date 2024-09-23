@@ -1,56 +1,180 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/profilebkg"
     tools:context=".MainActivity">
 
-    <!-- Main content layout -->
-    <RelativeLayout
+    <!-- Title Header -->
+    <TextView
+        android:id="@+id/welcomeMessage"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:text="Welcome, Username"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:gravity="center"
+        android:padding="16dp"
+        android:textColor="#FFFFFF"
+        android:background="@color/lavender" />
 
-        <!-- Toolbar with welcome message -->
-        <androidx.appcompat.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            android:contentInsetStart="0dp">
+    <!-- Main Content - Grid of Buttons -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:columnCount="2"
+        android:rowCount="2"
+        android:padding="16dp"
+        android:gravity="center">
 
-            <!-- Welcome Text inside Toolbar -->
-            <TextView
-                android:id="@+id/welcomeText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="@android:color/black"
-                android:paddingEnd="16dp"
-                android:paddingTop="8dp"
-                android:paddingBottom="8dp"/>
-        </androidx.appcompat.widget.Toolbar>
+        <!-- View Attendance Button -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/viewAttendanceCard"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
 
-        <!-- Main content goes here -->
-        <!-- Add your main content views here -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-    </RelativeLayout>
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/baseline_person_pin_24"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"
+                    app:tint="#2196F3" />
 
-    <!-- Navigation drawer -->
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:menu="@menu/drawer_menu" />
-  <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="User panel"
-      android:gravity="center"></TextView>
-</androidx.drawerlayout.widget.DrawerLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="View Attendance"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:gravity="center" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Profile Button -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profileCard"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/baseline_person_24"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"
+                    app:tint="#2196F3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:gravity="center" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Logout Button -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/logoutCard"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/baseline_supervised_user_circle_24"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"
+                    app:tint="#2196F3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Logout"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:gravity="center" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+        <!-- Refresh Button -->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/refreshCard"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_rowWeight="1"
+            android:layout_columnWeight="1"
+            android:layout_margin="8dp"
+            app:cardCornerRadius="8dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/baseline_refresh_24"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="8dp"
+                    app:tint="#2196F3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Refresh"
+                    android:textColor="#000000"
+                    android:textSize="16sp"
+                    android:gravity="center" />
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
+    </GridLayout>
+
+</LinearLayout>
