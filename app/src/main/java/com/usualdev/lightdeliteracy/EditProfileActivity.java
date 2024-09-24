@@ -10,7 +10,7 @@ import android.widget.Toast;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
-public class EditProfileActivity extends AppCompatActivity {
+public class    EditProfileActivity extends AppCompatActivity {
 
     private EditText editName, editEmail, editUsername, editPassword, editDay, editAdmno;
     private Button saveButton;
